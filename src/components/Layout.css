@@ -1,13 +1,45 @@
-.app-layout {
+/* Layout - Modern Theme */
+.layout {
+    display: flex;
     min-height: 100vh;
-    background-color: var(--gray-50);
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 50%, #d9dfe8 100%);
+    position: relative;
+}
+
+/* Animated background gradient */
+.layout::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .main-content {
     margin-left: var(--sidebar-width);
     margin-top: var(--header-height);
+    flex: 1;
     padding: var(--spacing-8);
-    min-height: calc(100vh - var(--header-height));
+    position: relative;
+    z-index: 1;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* Responsive */
