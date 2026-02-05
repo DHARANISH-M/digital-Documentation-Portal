@@ -1,21 +1,17 @@
-/* Profile Page - Modern Animated Theme */
+/* Profile Page Styling */
 .profile-page {
     max-width: 600px;
     margin: 0 auto;
 }
 
 .profile-header {
-    margin-bottom: var(--spacing-8);
-    animation: slideInDown 0.5s ease-out forwards;
+    margin-bottom: var(--spacing-6);
 }
 
 .profile-title {
-    font-size: var(--font-size-3xl);
-    font-weight: 800;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--gray-900);
     margin-bottom: var(--spacing-2);
 }
 
@@ -25,92 +21,55 @@
 }
 
 .profile-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-radius: var(--radius-2xl);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: white;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--gray-200);
     overflow: hidden;
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
-    animation: slideInUp 0.5s 0.2s ease-out forwards;
-    opacity: 0;
+    box-shadow: var(--shadow-sm);
 }
 
 /* Profile Avatar Section */
 .profile-avatar-section {
-    padding: var(--spacing-10);
-    background: var(--gradient-primary);
+    padding: var(--spacing-8);
+    background-color: var(--primary-50);
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.profile-avatar-section::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
-    animation: rotateBg 20s linear infinite;
-}
-
-@keyframes rotateBg {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
 }
 
 .profile-avatar {
-    width: 100px;
-    height: 100px;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
+    width: 80px;
+    height: 80px;
+    background-color: var(--primary-600);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--font-size-4xl);
-    font-weight: 800;
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
     color: white;
-    margin-bottom: var(--spacing-4);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    position: relative;
-    z-index: 1;
-    animation: float 3s ease-in-out infinite;
+    margin-bottom: var(--spacing-3);
 }
 
 .profile-name {
-    font-size: var(--font-size-2xl);
-    font-weight: 700;
-    color: white;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--gray-900);
     margin-bottom: var(--spacing-1);
-    position: relative;
-    z-index: 1;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .profile-email {
     font-size: var(--font-size-sm);
-    color: rgba(255, 255, 255, 0.85);
-    position: relative;
-    z-index: 1;
+    color: var(--gray-600);
 }
 
 /* Profile Details */
 .profile-details {
-    padding: var(--spacing-8);
+    padding: var(--spacing-6);
 }
 
 .profile-section {
-    margin-bottom: var(--spacing-8);
+    margin-bottom: var(--spacing-6);
 }
 
 .profile-section:last-child {
@@ -119,32 +78,22 @@
 
 .profile-section-title {
     font-size: var(--font-size-sm);
-    font-weight: 700;
+    font-weight: 600;
     color: var(--gray-900);
-    margin-bottom: var(--spacing-4);
+    margin-bottom: var(--spacing-3);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-}
-
-.profile-section-title::after {
-    content: '';
-    flex: 1;
-    height: 2px;
-    background: linear-gradient(90deg, var(--gray-200), transparent);
 }
 
 .profile-info-item {
     display: flex;
     align-items: center;
-    gap: var(--spacing-4);
-    padding: var(--spacing-4);
-    background: var(--gray-50);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--spacing-3);
-    transition: all var(--transition-base);
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+    background-color: var(--gray-50);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-2);
+    transition: background-color var(--transition-fast);
 }
 
 .profile-info-item:last-child {
@@ -152,14 +101,13 @@
 }
 
 .profile-info-item:hover {
-    background: linear-gradient(135deg, var(--primary-50) 0%, var(--gray-50) 100%);
-    transform: translateX(5px);
+    background-color: var(--gray-100);
 }
 
 .profile-info-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--primary-100) 0%, var(--primary-50) 100%);
+    width: 36px;
+    height: 36px;
+    background-color: white;
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
@@ -169,8 +117,8 @@
 }
 
 .profile-info-icon svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
 
 .profile-info-content {
@@ -185,22 +133,21 @@
 }
 
 .profile-info-value {
-    font-weight: 600;
+    font-weight: 500;
     color: var(--gray-900);
 }
 
 /* Edit Form */
 .profile-edit-form {
-    padding: var(--spacing-6);
-    background: linear-gradient(135deg, var(--primary-50) 0%, rgba(99, 102, 241, 0.03) 100%);
-    border-radius: var(--radius-xl);
-    margin-bottom: var(--spacing-4);
-    animation: fadeIn 0.3s ease-out;
+    padding: var(--spacing-4);
+    background-color: var(--gray-50);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-3);
 }
 
 .profile-actions {
     display: flex;
-    gap: var(--spacing-4);
+    gap: var(--spacing-3);
 }
 
 .profile-actions .btn {
@@ -211,110 +158,37 @@
 .profile-success {
     display: flex;
     align-items: center;
-    gap: var(--spacing-3);
-    padding: var(--spacing-4);
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    border-radius: var(--radius-lg);
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-4);
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: var(--radius-md);
     color: var(--success);
-    font-weight: 500;
-    margin-bottom: var(--spacing-6);
-    animation: slideInDown 0.4s ease-out;
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-4);
 }
 
 .profile-success svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
 }
 
 .profile-error {
     display: flex;
     align-items: center;
-    gap: var(--spacing-3);
-    padding: var(--spacing-4);
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    border-radius: var(--radius-lg);
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-4);
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--radius-md);
     color: var(--error);
-    font-weight: 500;
-    margin-bottom: var(--spacing-6);
-    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-4);
 }
 
 .profile-error svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
-}
-
-/* Animations */
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-8px);
-    }
-}
-
-@keyframes shake {
-
-    10%,
-    90% {
-        transform: translateX(-1px);
-    }
-
-    20%,
-    80% {
-        transform: translateX(2px);
-    }
-
-    30%,
-    50%,
-    70% {
-        transform: translateX(-4px);
-    }
-
-    40%,
-    60% {
-        transform: translateX(4px);
-    }
 }
