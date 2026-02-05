@@ -10,6 +10,7 @@ import {
     signInWithPopup
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import { saveUser } from '../services/admin';
 
 const AuthContext = createContext();
 const googleProvider = new GoogleAuthProvider();
@@ -27,17 +28,25 @@ export function AuthProvider({ children }) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         // Update the user's display name
         await updateProfile(userCredential.user, { displayName });
+        // Save user to Firestore
+        await saveUser({ ...userCredential.user, displayName });
         return userCredential;
     }
 
     // Sign in with email and password
-    function login(email, password) {
-        return signInWithEmailAndPassword(auth, email, password);
+    async function login(email, password) {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        // Save/update user in Firestore
+        await saveUser(userCredential.user);
+        return userCredential;
     }
 
     // Sign in with Google
-    function signInWithGoogle() {
-        return signInWithPopup(auth, googleProvider);
+    async function signInWithGoogle() {
+        const result = await signInWithPopup(auth, googleProvider);
+        // Save/update user in Firestore
+        await saveUser(result.user);
+        return result;
     }
 
     // Sign out

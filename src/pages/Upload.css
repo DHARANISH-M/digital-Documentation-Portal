@@ -4,69 +4,50 @@
     margin: 0 auto;
 }
 
-.page-header {
+.upload-header {
     margin-bottom: var(--spacing-6);
 }
 
-.page-title {
+.upload-title {
     font-size: var(--font-size-2xl);
     font-weight: 700;
     color: var(--gray-900);
     margin-bottom: var(--spacing-2);
 }
 
-.page-subtitle {
+.upload-subtitle {
     font-size: var(--font-size-base);
     color: var(--gray-500);
 }
 
-/* Error Message */
-.upload-error {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-2);
-    padding: var(--spacing-3) var(--spacing-4);
-    background-color: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    border-radius: var(--radius-md);
-    color: var(--error);
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--spacing-5);
-}
-
-.upload-error svg {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
+.upload-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--gray-200);
+    padding: var(--spacing-6);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Drop Zone */
 .drop-zone {
     border: 2px dashed var(--gray-300);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     padding: var(--spacing-10);
     text-align: center;
     transition: all var(--transition-base);
     cursor: pointer;
     background-color: var(--gray-50);
-    margin-bottom: var(--spacing-6);
 }
 
 .drop-zone:hover,
-.drop-zone-active {
-    border-color: var(--primary-400);
-    background-color: var(--primary-50);
-}
-
-.drop-zone-has-file {
-    border-style: solid;
+.drop-zone.dragging {
     border-color: var(--primary-400);
     background-color: var(--primary-50);
 }
 
 .drop-zone-icon {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
     margin: 0 auto var(--spacing-4);
     background-color: var(--primary-100);
     border-radius: var(--radius-xl);
@@ -77,13 +58,12 @@
 }
 
 .drop-zone-icon svg {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
 }
 
 .drop-zone-text {
     font-size: var(--font-size-base);
-    font-weight: 500;
     color: var(--gray-700);
     margin-bottom: var(--spacing-1);
 }
@@ -93,60 +73,63 @@
     color: var(--gray-500);
 }
 
-.drop-zone-link {
+.drop-zone-browse {
     color: var(--primary-600);
     font-weight: 500;
     cursor: pointer;
 }
 
-.drop-zone-link:hover {
+.drop-zone-browse:hover {
     text-decoration: underline;
 }
 
-/* Selected File */
-.selected-file {
+/* File Preview */
+.file-preview {
     display: flex;
     align-items: center;
     gap: var(--spacing-4);
-    text-align: left;
+    padding: var(--spacing-4);
+    background-color: var(--gray-50);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-5);
 }
 
-.selected-file-icon {
+.file-preview-icon {
     width: 48px;
     height: 48px;
-    background-color: var(--primary-600);
-    border-radius: var(--radius-lg);
+    background-color: var(--primary-100);
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--primary-600);
     flex-shrink: 0;
 }
 
-.selected-file-icon svg {
+.file-preview-icon svg {
     width: 24px;
     height: 24px;
 }
 
-.selected-file-info {
+.file-preview-info {
     flex: 1;
     min-width: 0;
 }
 
-.selected-file-name {
-    font-weight: 600;
+.file-preview-name {
+    font-weight: 500;
     color: var(--gray-900);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.selected-file-size {
+.file-preview-size {
     font-size: var(--font-size-sm);
     color: var(--gray-500);
 }
 
-.remove-file-btn {
+.file-preview-remove {
     padding: var(--spacing-2);
     background: transparent;
     border: none;
@@ -156,12 +139,12 @@
     transition: all var(--transition-fast);
 }
 
-.remove-file-btn:hover {
-    background-color: rgba(239, 68, 68, 0.1);
+.file-preview-remove:hover {
+    background-color: var(--gray-100);
     color: var(--error);
 }
 
-.remove-file-btn svg {
+.file-preview-remove svg {
     width: 20px;
     height: 20px;
 }
@@ -186,57 +169,74 @@
 }
 
 .progress-text {
-    display: block;
     margin-top: var(--spacing-2);
     font-size: var(--font-size-sm);
     color: var(--gray-600);
     text-align: center;
 }
 
-/* Document Details Card */
-.document-details {
-    background: white;
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--gray-200);
-    padding: var(--spacing-6);
-    margin-bottom: var(--spacing-6);
+/* Form Section */
+.upload-form {
+    margin-top: var(--spacing-5);
+    padding-top: var(--spacing-5);
+    border-top: 1px solid var(--gray-200);
 }
 
-.details-title {
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    color: var(--gray-900);
-    margin-bottom: var(--spacing-5);
-}
-
-.details-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--spacing-4);
-}
-
-.required {
-    color: var(--error);
-}
-
-/* Form Actions */
-.form-actions {
+.upload-actions {
     display: flex;
     gap: var(--spacing-3);
+    margin-top: var(--spacing-5);
 }
 
-.btn-lg {
-    padding: var(--spacing-4) var(--spacing-8);
-    font-size: var(--font-size-base);
+.upload-actions .btn {
+    flex: 1;
+}
+
+/* Success State */
+.upload-success {
+    text-align: center;
+    padding: var(--spacing-6);
+}
+
+.upload-success-icon {
+    width: 64px;
+    height: 64px;
+    background-color: rgba(16, 185, 129, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--success);
+    margin: 0 auto var(--spacing-4);
+}
+
+.upload-success-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+.upload-success h3 {
+    font-size: var(--font-size-lg);
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-2);
+}
+
+.upload-success p {
+    color: var(--gray-500);
+    margin-bottom: var(--spacing-5);
 }
 
 /* Responsive */
 @media (max-width: 600px) {
-    .form-actions {
-        flex-direction: column;
+    .upload-card {
+        padding: var(--spacing-4);
     }
 
-    .form-actions .btn {
-        width: 100%;
+    .drop-zone {
+        padding: var(--spacing-6);
+    }
+
+    .upload-actions {
+        flex-direction: column;
     }
 }

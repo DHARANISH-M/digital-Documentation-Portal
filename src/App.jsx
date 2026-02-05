@@ -9,6 +9,8 @@ import Upload from './pages/Upload';
 import Documents from './pages/Documents';
 import Search from './pages/Search';
 import Profile from './pages/Profile';
+import Admin from './pages/Admin';
+import HelpPortal from './pages/HelpPortal';
 
 function App() {
     return (
@@ -27,6 +29,8 @@ function App() {
                         <Route path="documents" element={<Documents />} />
                         <Route path="search" element={<Search />} />
                         <Route path="profile" element={<Profile />} />
+                        <Route path="admin" element={<Admin />} />
+                        <Route path="help" element={<HelpPortal />} />
                     </Route>
                 </Routes>
             </Router>

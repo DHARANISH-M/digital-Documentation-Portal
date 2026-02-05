@@ -1,14 +1,25 @@
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { isAdmin } from '../services/admin';
 import './Sidebar.css';
 
 function Sidebar() {
+    const { currentUser } = useAuth();
+    const userIsAdmin = isAdmin(currentUser?.email);
+
     const menuItems = [
         { path: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
         { path: '/upload', icon: 'upload', label: 'Upload Document' },
         { path: '/documents', icon: 'documents', label: 'View Documents' },
         { path: '/search', icon: 'search', label: 'Search & Filter' },
+        { path: '/help', icon: 'help', label: 'Help & Support' },
         { path: '/profile', icon: 'profile', label: 'Profile' }
     ];
+
+    // Add admin link if user is admin
+    if (userIsAdmin) {
+        menuItems.splice(5, 0, { path: '/admin', icon: 'admin', label: 'Admin Panel' });
+    }
 
     const getIcon = (iconName) => {
         switch (iconName) {
@@ -44,6 +55,20 @@ function Sidebar() {
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="11" cy="11" r="8" />
                         <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                );
+            case 'help':
+                return (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                );
+            case 'admin':
+                return (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                     </svg>
                 );
             case 'profile':
