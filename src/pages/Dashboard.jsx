@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getDocumentStats } from '../services/documents';
 import { formatFileSize } from '../services/storage';
+import { saveUser } from '../services/admin';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -27,8 +28,18 @@ function Dashboard() {
             }
         }
 
+        // Auto-sync user to Firestore for Admin panel
+        async function syncUser() {
+            try {
+                await saveUser(currentUser);
+            } catch (error) {
+                console.error('Error syncing user:', error);
+            }
+        }
+
         if (currentUser) {
             fetchStats();
+            syncUser();
         }
     }, [currentUser]);
 
