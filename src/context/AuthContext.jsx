@@ -28,24 +28,37 @@ export function AuthProvider({ children }) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         // Update the user's display name
         await updateProfile(userCredential.user, { displayName });
-        // Save user to Firestore
-        await saveUser({ ...userCredential.user, displayName });
+        // Save user to Firestore (non-blocking)
+        try {
+            await saveUser({ ...userCredential.user, displayName });
+        } catch (error) {
+            console.error('Error saving user data:', error);
+        }
         return userCredential;
     }
 
     // Sign in with email and password
     async function login(email, password) {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        // Save/update user in Firestore
-        await saveUser(userCredential.user);
+        // Save/update user in Firestore (non-blocking)
+        try {
+            await saveUser(userCredential.user);
+        } catch (error) {
+            console.error('Error saving user data:', error);
+        }
         return userCredential;
     }
 
     // Sign in with Google
     async function signInWithGoogle() {
         const result = await signInWithPopup(auth, googleProvider);
-        // Save/update user in Firestore
-        await saveUser(result.user);
+        // Save/update user in Firestore (non-blocking, don't fail sign-in if this fails)
+        try {
+            await saveUser(result.user);
+        } catch (error) {
+            console.error('Error saving user data:', error);
+            // Don't throw - user is already authenticated
+        }
         return result;
     }
 
