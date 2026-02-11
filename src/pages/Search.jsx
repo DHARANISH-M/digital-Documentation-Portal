@@ -135,9 +135,11 @@ function Search() {
                 </div>
             </div>
 
-            <p className="results-count">
-                Found <strong>{documents.length}</strong> documents
-            </p>
+            <div className="results-header">
+                <p className="results-count">
+                    Found <strong>{documents.length}</strong> documents
+                </p>
+            </div>
 
             {loading ? (
                 <div className="search-loading">

@@ -2,11 +2,12 @@
 .search-page {
     max-width: 1200px;
     margin: 0 auto;
+    padding-bottom: var(--spacing-8);
 }
 
-/* Page Header (shared pattern) */
+/* Page Header */
 .search-page .page-header {
-    margin-bottom: var(--spacing-6);
+    margin-bottom: var(--spacing-8);
 }
 
 .search-page .page-title {
@@ -23,12 +24,18 @@
 
 /* Search Controls Container */
 .search-controls {
-    margin-bottom: var(--spacing-5);
+    margin-bottom: var(--spacing-8);
+    background: white;
+    padding: var(--spacing-6);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Search Form */
 .search-form {
     margin-bottom: var(--spacing-5);
+    max-width: 800px;
 }
 
 .search-input-wrapper {
@@ -48,12 +55,12 @@
 
 .search-input {
     width: 100%;
-    padding: var(--spacing-4) var(--spacing-5);
-    padding-left: 52px;
+    padding: var(--spacing-3) var(--spacing-4);
+    padding-left: 48px;
     font-size: var(--font-size-base);
     background: white;
     border: 1px solid var(--gray-300);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     transition: all var(--transition-base);
     box-sizing: border-box;
 }
@@ -73,10 +80,11 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-2);
+    align-items: center;
 }
 
 .category-btn {
-    padding: var(--spacing-2) var(--spacing-4);
+    padding: var(--spacing-1) var(--spacing-4);
     background: white;
     border: 1px solid var(--gray-300);
     border-radius: var(--radius-full);
@@ -85,11 +93,13 @@
     color: var(--gray-600);
     cursor: pointer;
     transition: all var(--transition-base);
+    white-space: nowrap;
 }
 
 .category-btn:hover {
     border-color: var(--primary-400);
     color: var(--primary-600);
+    background-color: var(--primary-50);
 }
 
 .category-btn-active {
@@ -105,10 +115,18 @@
 }
 
 /* Results Count */
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+    padding-bottom: var(--spacing-2);
+    border-bottom: 1px solid var(--gray-100);
+}
+
 .results-count {
     font-size: var(--font-size-sm);
     color: var(--gray-500);
-    margin-bottom: var(--spacing-4);
 }
 
 .results-count strong {
@@ -129,6 +147,7 @@
     background: white;
     border-radius: var(--radius-xl);
     border: 1px solid var(--gray-200);
+    color: var(--gray-500);
 }
 
 .search-empty svg {
