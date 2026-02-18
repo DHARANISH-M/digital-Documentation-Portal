@@ -1,47 +1,51 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getDocumentStats } from '../services/documents';
+import { useData } from '../context/DataContext';
 import { formatFileSize } from '../services/storage';
 import { saveUser } from '../services/admin';
 import './Dashboard.css';
 
 function Dashboard() {
     const { currentUser } = useAuth();
-    const [stats, setStats] = useState({
-        totalDocuments: 0,
-        recentUploads: 0,
-        storageUsed: 0,
-        recentActivity: []
-    });
+    const { documents, documentsLoading, loadDocuments } = useData();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        async function fetchStats() {
-            try {
-                const data = await getDocumentStats(currentUser.uid);
-                setStats(data);
-            } catch (error) {
-                console.error('Error fetching stats:', error);
-            } finally {
-                setLoading(false);
+        async function init() {
+            if (currentUser) {
+                await loadDocuments();
+                // Auto-sync user to Firestore for Admin panel (non-blocking)
+                try { saveUser(currentUser); } catch (e) { /* silent */ }
             }
+            setLoading(false);
         }
-
-        // Auto-sync user to Firestore for Admin panel
-        async function syncUser() {
-            try {
-                await saveUser(currentUser);
-            } catch (error) {
-                console.error('Error syncing user:', error);
-            }
-        }
-
-        if (currentUser) {
-            fetchStats();
-            syncUser();
-        }
+        init();
     }, [currentUser]);
+
+    // Compute stats from cached documents
+    const stats = useMemo(() => {
+        const now = new Date();
+        const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+        const recentUploads = documents.filter(doc => {
+            if (doc.createdAt?.toDate) {
+                return doc.createdAt.toDate() > oneWeekAgo;
+            }
+            return false;
+        });
+
+        const totalSize = documents.reduce((acc, doc) => acc + (doc.fileSize || 0), 0);
+
+        return {
+            totalDocuments: documents.length,
+            recentUploads: recentUploads.length,
+            storageUsed: totalSize,
+            recentActivity: documents.slice(0, 5)
+        };
+    }, [documents]);
+
+    const isLoading = loading || documentsLoading;
 
     const getUserName = () => {
         return currentUser?.displayName?.split(' ')[0] || 'User';
@@ -74,7 +78,7 @@ function Dashboard() {
                 <div className="stat-card">
                     <div className="stat-content">
                         <p className="stat-label">Total Documents</p>
-                        <p className="stat-value">{loading ? '...' : stats.totalDocuments}</p>
+                        <p className="stat-value">{isLoading ? '...' : stats.totalDocuments}</p>
                         <p className="stat-description">All documents in your account</p>
                     </div>
                     <div className="stat-icon stat-icon-blue">
@@ -88,7 +92,7 @@ function Dashboard() {
                 <div className="stat-card">
                     <div className="stat-content">
                         <p className="stat-label">Recent Uploads</p>
-                        <p className="stat-value">{loading ? '...' : stats.recentUploads}</p>
+                        <p className="stat-value">{isLoading ? '...' : stats.recentUploads}</p>
                         <p className="stat-description">Uploaded this week</p>
                     </div>
                     <div className="stat-icon stat-icon-yellow">
@@ -102,7 +106,7 @@ function Dashboard() {
                 <div className="stat-card">
                     <div className="stat-content">
                         <p className="stat-label">Storage Usage</p>
-                        <p className="stat-value">{loading ? '...' : formatFileSize(stats.storageUsed)}</p>
+                        <p className="stat-value">{isLoading ? '...' : formatFileSize(stats.storageUsed)}</p>
                         <p className="stat-description">of 100GB used</p>
                     </div>
                     <div className="stat-icon stat-icon-orange">
@@ -147,7 +151,7 @@ function Dashboard() {
             <div className="recent-activity">
                 <h2 className="section-title">Recent Activity</h2>
 
-                {loading ? (
+                {isLoading ? (
                     <div className="activity-loading">
                         <div className="spinner"></div>
                         <p>Loading activity...</p>

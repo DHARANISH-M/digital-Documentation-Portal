@@ -309,3 +309,50 @@
         flex-direction: column;
     }
 }
+
+/* Folder Selector */
+.folder-selector-row {
+    display: flex;
+    gap: var(--spacing-2);
+    align-items: center;
+}
+
+.folder-selector-row .form-select {
+    flex: 1;
+}
+
+.new-folder-btn {
+    padding: var(--spacing-2) var(--spacing-3) !important;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.new-folder-inline {
+    display: flex;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-2);
+    animation: slideDown 0.2s ease;
+}
+
+.new-folder-inline .form-input {
+    flex: 1;
+}
+
+.new-folder-inline .btn {
+    flex-shrink: 0;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

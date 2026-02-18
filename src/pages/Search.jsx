@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { searchDocuments } from '../services/documents';
+import { useData } from '../context/DataContext';
 import { deleteFile } from '../services/storage';
 import { deleteDocument } from '../services/documents';
 import DocumentCard from '../components/DocumentCard';
@@ -9,39 +9,45 @@ import './Search.css';
 function Search() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
-    const [documents, setDocuments] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [documentToDelete, setDocumentToDelete] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
     const { currentUser } = useAuth();
+    const { documents, documentsLoading, loadDocuments, removeDocumentFromCache } = useData();
 
     const categories = ['All', 'Financial', 'Legal', 'HR', 'Marketing', 'Operations', 'Other'];
 
     useEffect(() => {
-        performSearch();
-    }, [currentUser, selectedCategory]);
-
-    const performSearch = async () => {
-        setLoading(true);
-        try {
-            const results = await searchDocuments(
-                currentUser.uid,
-                searchQuery,
-                selectedCategory
-            );
-            setDocuments(results);
-        } catch (error) {
-            console.error('Error searching documents:', error);
-        } finally {
-            setLoading(false);
+        if (currentUser) {
+            loadDocuments();
         }
-    };
+    }, [currentUser]);
+
+    // Filter documents client-side from cache
+    const filteredDocuments = useMemo(() => {
+        let results = documents;
+
+        // Filter by category
+        if (selectedCategory && selectedCategory !== 'All') {
+            results = results.filter(doc => doc.category === selectedCategory);
+        }
+
+        // Filter by search query
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            results = results.filter(doc =>
+                doc.name?.toLowerCase().includes(query) ||
+                doc.owner?.toLowerCase().includes(query)
+            );
+        }
+
+        return results;
+    }, [documents, selectedCategory, searchQuery]);
 
     const handleSearch = (e) => {
         e.preventDefault();
-        performSearch();
+        // No need to fetch — filtering happens automatically via useMemo
     };
 
     const handleView = (document) => {
@@ -88,7 +94,8 @@ function Search() {
                 await deleteFile(documentToDelete.filePath);
             }
             await deleteDocument(documentToDelete.id);
-            setDocuments(prev => prev.filter(d => d.id !== documentToDelete.id));
+            // Update cache locally
+            removeDocumentFromCache(documentToDelete.id);
             setDeleteModalOpen(false);
             setDocumentToDelete(null);
         } catch (error) {
@@ -137,18 +144,18 @@ function Search() {
 
             <div className="results-header">
                 <p className="results-count">
-                    Found <strong>{documents.length}</strong> documents
+                    Found <strong>{filteredDocuments.length}</strong> documents
                 </p>
             </div>
 
-            {loading ? (
+            {documentsLoading && !documents.length ? (
                 <div className="search-loading">
                     <div className="spinner"></div>
                     <p>Searching...</p>
                 </div>
-            ) : documents.length > 0 ? (
+            ) : filteredDocuments.length > 0 ? (
                 <div className="search-results-grid">
-                    {documents.map(doc => (
+                    {filteredDocuments.map(doc => (
                         <DocumentCard
                             key={doc.id}
                             document={doc}

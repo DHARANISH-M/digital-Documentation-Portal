@@ -11,6 +11,7 @@ function Sidebar() {
         { path: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
         { path: '/upload', icon: 'upload', label: 'Upload Document' },
         { path: '/documents', icon: 'documents', label: 'View Documents' },
+        { path: '/folders', icon: 'folders', label: 'Folders' },
         { path: '/search', icon: 'search', label: 'Search & Filter' },
         { path: '/help', icon: 'help', label: 'Help & Support' },
         { path: '/profile', icon: 'profile', label: 'Profile' }
@@ -48,6 +49,12 @@ function Sidebar() {
                         <line x1="16" y1="13" x2="8" y2="13" />
                         <line x1="16" y1="17" x2="8" y2="17" />
                         <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                );
+            case 'folders':
+                return (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
                     </svg>
                 );
             case 'search':

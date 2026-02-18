@@ -1,8 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useData } from '../context/DataContext';
 import { createDocument } from '../services/documents';
 import { uploadFile, formatFileSize } from '../services/storage';
+import { createFolder } from '../services/folders';
 import './Upload.css';
 
 function Upload() {
@@ -10,16 +12,27 @@ function Upload() {
     const [formData, setFormData] = useState({
         name: '',
         category: '',
-        description: ''
+        description: '',
+        folderId: ''
     });
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [error, setError] = useState('');
     const [dragActive, setDragActive] = useState(false);
+    const [showNewFolder, setShowNewFolder] = useState(false);
+    const [newFolderName, setNewFolderName] = useState('');
+    const [creatingFolder, setCreatingFolder] = useState(false);
 
     const { currentUser } = useAuth();
+    const { folders, loadFolders, addFolderToCache, addDocumentToCache } = useData();
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
+
+    useEffect(() => {
+        if (currentUser) {
+            loadFolders();
+        }
+    }, [currentUser]);
 
     const categories = [
         'Financial',
@@ -94,11 +107,11 @@ function Upload() {
                 (progress) => setUploadProgress(progress)
             );
 
-            // Save document metadata to Firestore
-            await createDocument({
+            const docData = {
                 name: formData.name,
                 category: formData.category,
                 description: formData.description,
+                folderId: formData.folderId || null,
                 fileName: file.name,
                 fileSize: file.size,
                 fileType: file.type,
@@ -106,6 +119,16 @@ function Upload() {
                 filePath: uploadResult.path,
                 userId: currentUser.uid,
                 owner: currentUser.displayName || currentUser.email
+            };
+
+            // Save document metadata to Firestore
+            const docId = await createDocument(docData);
+
+            // Add to cache so it appears instantly on other pages
+            addDocumentToCache({
+                id: docId,
+                ...docData,
+                createdAt: { toDate: () => new Date(), toMillis: () => Date.now() }
             });
 
             navigate('/documents');
@@ -247,6 +270,89 @@ function Upload() {
                                 ))}
                             </select>
                         </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label" htmlFor="folderId">
+                            Folder (Optional)
+                        </label>
+                        <div className="folder-selector-row">
+                            <select
+                                id="folderId"
+                                name="folderId"
+                                className="form-select"
+                                value={formData.folderId}
+                                onChange={handleInputChange}
+                            >
+                                <option value="">No folder (Unfiled)</option>
+                                {folders.map(f => (
+                                    <option key={f.id} value={f.id}>{f.name}</option>
+                                ))}
+                            </select>
+                            <button
+                                type="button"
+                                className="btn btn-secondary btn-sm new-folder-btn"
+                                onClick={() => setShowNewFolder(!showNewFolder)}
+                                title="Create new folder"
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                                    <line x1="12" y1="5" x2="12" y2="19" />
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                </svg>
+                            </button>
+                        </div>
+                        {showNewFolder && (
+                            <div className="new-folder-inline">
+                                <input
+                                    className="form-input"
+                                    type="text"
+                                    placeholder="New folder name"
+                                    value={newFolderName}
+                                    onChange={(e) => setNewFolderName(e.target.value)}
+                                    autoFocus
+                                />
+                                <button
+                                    type="button"
+                                    className="btn btn-primary btn-sm"
+                                    disabled={creatingFolder || !newFolderName.trim()}
+                                    onClick={async () => {
+                                        setCreatingFolder(true);
+                                        setError('');
+                                        try {
+                                            const timeoutPromise = new Promise((_, reject) =>
+                                                setTimeout(() => reject(new Error('Request timed out. Please check your internet connection.')), 15000)
+                                            );
+                                            const newId = await Promise.race([
+                                                createFolder(newFolderName.trim(), currentUser.uid),
+                                                timeoutPromise
+                                            ]);
+                                            addFolderToCache({
+                                                id: newId,
+                                                name: newFolderName.trim(),
+                                                userId: currentUser.uid,
+                                                createdAt: { toDate: () => new Date(), toMillis: () => Date.now() }
+                                            });
+                                            setFormData(prev => ({ ...prev, folderId: newId }));
+                                            setNewFolderName('');
+                                            setShowNewFolder(false);
+                                        } catch (err) {
+                                            console.error('Error creating folder:', err);
+                                            if (err.code === 'permission-denied') {
+                                                setError('Permission denied. Check Firestore security rules for the folders collection.');
+                                            } else if (err.message?.includes('timed out')) {
+                                                setError('Folder creation timed out. Check your internet connection and try again.');
+                                            } else {
+                                                setError(`Failed to create folder: ${err.message}`);
+                                            }
+                                        } finally {
+                                            setCreatingFolder(false);
+                                        }
+                                    }}
+                                >
+                                    {creatingFolder ? '...' : 'Create'}
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-group">

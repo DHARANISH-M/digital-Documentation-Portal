@@ -8,7 +8,6 @@ import {
     deleteDoc,
     query,
     where,
-    orderBy,
     serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -19,6 +18,7 @@ const COLLECTION_NAME = 'documents';
 export async function createDocument(documentData) {
     const docRef = await addDoc(collection(db, COLLECTION_NAME), {
         ...documentData,
+        folderId: documentData.folderId || null,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
     });
@@ -29,8 +29,7 @@ export async function createDocument(documentData) {
 export async function getDocuments(userId) {
     const q = query(
         collection(db, COLLECTION_NAME),
-        where('userId', '==', userId),
-        orderBy('createdAt', 'desc')
+        where('userId', '==', userId)
     );
 
     const querySnapshot = await getDocs(q);
@@ -40,7 +39,53 @@ export async function getDocuments(userId) {
         documents.push({ id: doc.id, ...doc.data() });
     });
 
+    // Sort client-side (newest first) to avoid needing a Firestore composite index
+    documents.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || a.createdAt?.seconds * 1000 || 0;
+        const bTime = b.createdAt?.toMillis?.() || b.createdAt?.seconds * 1000 || 0;
+        return bTime - aTime;
+    });
+
     return documents;
+}
+
+// Get documents by folder
+export async function getDocumentsByFolder(userId, folderId) {
+    const q = query(
+        collection(db, COLLECTION_NAME),
+        where('userId', '==', userId),
+        where('folderId', '==', folderId)
+    );
+
+    const querySnapshot = await getDocs(q);
+    const documents = [];
+
+    querySnapshot.forEach((doc) => {
+        documents.push({ id: doc.id, ...doc.data() });
+    });
+
+    // Sort client-side (newest first)
+    documents.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || 0;
+        const bTime = b.createdAt?.toMillis?.() || 0;
+        return bTime - aTime;
+    });
+
+    return documents;
+}
+
+// Unfile all documents in a folder (set folderId to null)
+export async function unfileDocumentsInFolder(folderId) {
+    const q = query(
+        collection(db, COLLECTION_NAME),
+        where('folderId', '==', folderId)
+    );
+    const querySnapshot = await getDocs(q);
+    const updates = [];
+    querySnapshot.forEach((docSnap) => {
+        updates.push(updateDoc(doc(db, COLLECTION_NAME, docSnap.id), { folderId: null, updatedAt: serverTimestamp() }));
+    });
+    await Promise.all(updates);
 }
 
 // Get a single document by ID
@@ -77,14 +122,12 @@ export async function searchDocuments(userId, searchQuery = '', category = '') {
         q = query(
             collection(db, COLLECTION_NAME),
             where('userId', '==', userId),
-            where('category', '==', category),
-            orderBy('createdAt', 'desc')
+            where('category', '==', category)
         );
     } else {
         q = query(
             collection(db, COLLECTION_NAME),
-            where('userId', '==', userId),
-            orderBy('createdAt', 'desc')
+            where('userId', '==', userId)
         );
     }
 
@@ -99,6 +142,13 @@ export async function searchDocuments(userId, searchQuery = '', category = '') {
             data.owner?.toLowerCase().includes(searchQuery.toLowerCase())) {
             documents.push({ id: doc.id, ...data });
         }
+    });
+
+    // Sort client-side (newest first)
+    documents.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis?.() || a.createdAt?.seconds * 1000 || 0;
+        const bTime = b.createdAt?.toMillis?.() || b.createdAt?.seconds * 1000 || 0;
+        return bTime - aTime;
     });
 
     return documents;

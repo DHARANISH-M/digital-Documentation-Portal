@@ -1,0 +1,179 @@
+/* Folders Page Styling */
+.folders-page {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.folders-page .page-header {
+    margin-bottom: var(--spacing-6);
+}
+
+.page-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-4);
+}
+
+.page-header-row .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.folders-page .page-title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-2);
+}
+
+.folders-page .page-subtitle {
+    font-size: var(--font-size-base);
+    color: var(--gray-500);
+}
+
+/* Folders Grid */
+.folders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--spacing-5);
+}
+
+/* Folder Card */
+.folder-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--gray-200);
+    padding: var(--spacing-5);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+}
+
+.folder-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-200);
+}
+
+.folder-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+}
+
+.folder-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.folder-icon svg {
+    width: 24px;
+    height: 24px;
+    color: #D97706;
+}
+
+.folder-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.folder-name {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--gray-900);
+    cursor: pointer;
+    margin-bottom: var(--spacing-1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color var(--transition-fast);
+}
+
+.folder-name:hover {
+    color: var(--primary-600);
+}
+
+.folder-meta {
+    font-size: var(--font-size-xs);
+    color: var(--gray-500);
+}
+
+/* Rename Form */
+.rename-form {
+    display: flex;
+}
+
+.rename-input {
+    width: 100%;
+    padding: var(--spacing-1) var(--spacing-2);
+    font-size: var(--font-size-sm);
+    border: 1px solid var(--primary-400);
+    border-radius: var(--radius-md);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Folder Actions */
+.folder-actions {
+    display: flex;
+    gap: var(--spacing-2);
+    border-top: 1px solid var(--gray-100);
+    padding-top: var(--spacing-3);
+}
+
+/* Loading State */
+.folders-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-12);
+    gap: var(--spacing-3);
+}
+
+/* Empty State */
+.folders-empty {
+    text-align: center;
+    padding: var(--spacing-12);
+    background: white;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--gray-200);
+}
+
+.folders-empty svg {
+    width: 64px;
+    height: 64px;
+    color: #D97706;
+    margin-bottom: var(--spacing-4);
+}
+
+.folders-empty h3 {
+    font-size: var(--font-size-lg);
+    color: var(--gray-700);
+    margin-bottom: var(--spacing-2);
+}
+
+.folders-empty p {
+    color: var(--gray-500);
+    margin-bottom: var(--spacing-5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .folders-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header-row {
+        flex-direction: column;
+    }
+}

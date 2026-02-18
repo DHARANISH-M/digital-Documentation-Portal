@@ -1,33 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getDocuments, deleteDocument } from '../services/documents';
+import { useData } from '../context/DataContext';
+import { deleteDocument } from '../services/documents';
 import { deleteFile } from '../services/storage';
 import DocumentCard from '../components/DocumentCard';
 import './Documents.css';
 
 function Documents() {
-    const [documents, setDocuments] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [documentToDelete, setDocumentToDelete] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
     const { currentUser } = useAuth();
+    const { documents, documentsLoading, documentsError, loadDocuments, removeDocumentFromCache } = useData();
+    const [searchParams] = useSearchParams();
+    const folderId = searchParams.get('folder');
+    const folderName = searchParams.get('folderName');
 
     useEffect(() => {
-        fetchDocuments();
+        if (currentUser) {
+            loadDocuments();
+        }
     }, [currentUser]);
 
-    const fetchDocuments = async () => {
-        try {
-            const docs = await getDocuments(currentUser.uid);
-            setDocuments(docs);
-        } catch (error) {
-            console.error('Error fetching documents:', error);
-        } finally {
-            setLoading(false);
+    // Filter documents by folder client-side from cache
+    const filteredDocuments = useMemo(() => {
+        if (folderId) {
+            return documents.filter(doc => doc.folderId === folderId);
         }
-    };
+        return documents;
+    }, [documents, folderId]);
 
     const handleView = (document) => {
         if (document.fileUrl) {
@@ -37,11 +40,11 @@ function Documents() {
 
     const handleDownload = async (document) => {
         if (document.fileUrl) {
-            const link = document.createElement ? document.createElement('a') : window.document.createElement('a');
+            const link = window.document.createElement('a');
             link.href = document.fileUrl;
             link.download = document.fileName || document.name;
             link.target = '_blank';
-            document.body ? document.body.appendChild(link) : window.document.body.appendChild(link);
+            window.document.body.appendChild(link);
             link.click();
             link.remove();
         }
@@ -75,8 +78,8 @@ function Documents() {
             }
             // Delete document metadata from Firestore
             await deleteDocument(documentToDelete.id);
-            // Update local state
-            setDocuments(prev => prev.filter(d => d.id !== documentToDelete.id));
+            // Update cache locally (no re-fetch needed)
+            removeDocumentFromCache(documentToDelete.id);
             setDeleteModalOpen(false);
             setDocumentToDelete(null);
         } catch (error) {
@@ -90,22 +93,45 @@ function Documents() {
     return (
         <div className="documents-page fade-in">
             <div className="page-header">
-                <h1 className="page-title">View Documents</h1>
-                <p className="page-subtitle">Browse and manage all your documents</p>
+                <h1 className="page-title">
+                    {folderName ? folderName : 'View Documents'}
+                </h1>
+                <p className="page-subtitle">
+                    {folderName ? 'Documents in this folder' : 'Browse and manage all your documents'}
+                </p>
             </div>
 
+            {folderId && (
+                <div className="breadcrumb">
+                    <Link to="/documents" className="breadcrumb-link">All Documents</Link>
+                    <span className="breadcrumb-sep">/</span>
+                    <Link to="/folders" className="breadcrumb-link">Folders</Link>
+                    <span className="breadcrumb-sep">/</span>
+                    <span className="breadcrumb-current">{folderName || 'Folder'}</span>
+                </div>
+            )}
+
+            {documentsError && (
+                <div className="upload-error" style={{ marginBottom: '1rem' }}>
+                    <p>{documentsError}</p>
+                    <button className="btn btn-primary btn-sm" style={{ marginTop: '0.5rem' }} onClick={() => loadDocuments(true)}>
+                        Retry
+                    </button>
+                </div>
+            )}
+
             <p className="documents-count">
-                Showing <strong>{documents.length}</strong> documents
+                Showing <strong>{filteredDocuments.length}</strong> documents
             </p>
 
-            {loading ? (
+            {documentsLoading && !documents.length ? (
                 <div className="documents-loading">
                     <div className="spinner"></div>
                     <p>Loading documents...</p>
                 </div>
-            ) : documents.length > 0 ? (
+            ) : filteredDocuments.length > 0 ? (
                 <div className="documents-grid">
-                    {documents.map(doc => (
+                    {filteredDocuments.map(doc => (
                         <DocumentCard
                             key={doc.id}
                             document={doc}
