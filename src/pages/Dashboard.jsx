@@ -107,7 +107,7 @@ function Dashboard() {
                     <div className="stat-content">
                         <p className="stat-label">Storage Usage</p>
                         <p className="stat-value">{isLoading ? '...' : formatFileSize(stats.storageUsed)}</p>
-                        <p className="stat-description">of 100GB used</p>
+                        <p className="stat-description">of 10 GB limit</p>
                     </div>
                     <div className="stat-icon stat-icon-orange">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -117,7 +117,10 @@ function Dashboard() {
                     <div className="storage-bar">
                         <div
                             className="storage-progress"
-                            style={{ width: `${Math.min((stats.storageUsed / (100 * 1024 * 1024 * 1024)) * 100, 100)}%` }}
+                            style={{
+                                width: `${Math.min((stats.storageUsed / (10 * 1024 * 1024 * 1024)) * 100, 100)}%`,
+                                backgroundColor: stats.storageUsed > (9 * 1024 * 1024 * 1024) ? '#ef4444' : undefined
+                            }}
                         />
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
@@ -24,13 +24,24 @@ function Upload() {
     const [creatingFolder, setCreatingFolder] = useState(false);
 
     const { currentUser } = useAuth();
-    const { folders, loadFolders, addFolderToCache, addDocumentToCache } = useData();
+    const { documents, folders, loadFolders, loadDocuments, addFolderToCache, addDocumentToCache } = useData();
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
+
+    const STORAGE_LIMIT = 10 * 1024 * 1024 * 1024; // 10 GB in bytes
+
+    // Calculate current storage usage from cached documents
+    const storageUsed = useMemo(() => {
+        return documents.reduce((total, doc) => total + (doc.fileSize || 0), 0);
+    }, [documents]);
+
+    const storageRemaining = STORAGE_LIMIT - storageUsed;
+    const storagePercent = Math.min((storageUsed / STORAGE_LIMIT) * 100, 100);
 
     useEffect(() => {
         if (currentUser) {
             loadFolders();
+            loadDocuments();
         }
     }, [currentUser]);
 
@@ -93,6 +104,12 @@ function Upload() {
 
         if (!formData.category) {
             setError('Please select a category');
+            return;
+        }
+
+        // Check storage limit
+        if (file.size > storageRemaining) {
+            setError(`Storage limit exceeded! You have ${formatFileSize(storageRemaining)} remaining out of 10 GB. This file is ${formatFileSize(file.size)}.`);
             return;
         }
 
@@ -162,6 +179,27 @@ function Upload() {
                     {error}
                 </div>
             )}
+
+            <div className="card" style={{ marginBottom: '1.5rem', padding: '1.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                    <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>📦 Storage Usage</span>
+                    <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                        {formatFileSize(storageUsed)} / 10 GB
+                    </span>
+                </div>
+                <div style={{ background: '#e2e8f0', borderRadius: '999px', height: '10px', overflow: 'hidden' }}>
+                    <div style={{
+                        width: `${storagePercent}%`,
+                        height: '100%',
+                        borderRadius: '999px',
+                        background: storagePercent > 90 ? '#ef4444' : storagePercent > 70 ? '#f59e0b' : '#22c55e',
+                        transition: 'width 0.3s ease'
+                    }} />
+                </div>
+                <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.4rem' }}>
+                    {formatFileSize(storageRemaining > 0 ? storageRemaining : 0)} remaining
+                </p>
+            </div>
 
             <form onSubmit={handleSubmit}>
                 <div
