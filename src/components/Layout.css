@@ -1,5 +1,5 @@
 /* Layout Styling */
-.layout {
+.app-layout {
     display: flex;
     min-height: 100vh;
 }
@@ -10,6 +10,12 @@
     flex: 1;
     padding: var(--spacing-8);
     background-color: var(--gray-50);
+    min-height: calc(100vh - var(--header-height));
+}
+
+/* Mobile Overlay (behind sidebar drawer) */
+.mobile-overlay {
+    display: none;
 }
 
 /* Responsive */
@@ -17,5 +23,26 @@
     .main-content {
         margin-left: 0;
         padding: var(--spacing-4);
+    }
+
+    .mobile-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 140;
+        animation: overlayFadeIn 0.3s ease both;
+    }
+
+    @keyframes overlayFadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
     }
 }

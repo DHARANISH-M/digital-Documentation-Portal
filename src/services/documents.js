@@ -114,6 +114,18 @@ export async function deleteDocument(docId) {
     await deleteDoc(docRef);
 }
 
+// Rename a document
+export async function renameDocument(docId, newName) {
+    if (!newName || !newName.trim()) {
+        throw new Error('Document name cannot be empty.');
+    }
+    const docRef = doc(db, COLLECTION_NAME, docId);
+    await updateDoc(docRef, {
+        name: newName.trim(),
+        updatedAt: serverTimestamp()
+    });
+}
+
 // Search documents by name or category
 export async function searchDocuments(userId, searchQuery = '', category = '') {
     let q;

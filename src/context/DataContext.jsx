@@ -5,6 +5,9 @@ import { getFolders } from '../services/folders';
 
 const DataContext = createContext();
 
+// 15-minute access window for protected folders (in milliseconds)
+const FOLDER_ACCESS_DURATION = 15 * 60 * 1000;
+
 export function useData() {
     return useContext(DataContext);
 }
@@ -22,6 +25,9 @@ export function DataProvider({ children }) {
     const [folders, setFolders] = useState([]);
     const [foldersLoaded, setFoldersLoaded] = useState(false);
     const [foldersLoading, setFoldersLoading] = useState(false);
+
+    // Folder access sessions — { folderId: grantedAtTimestamp }
+    const [folderAccessSessions, setFolderAccessSessions] = useState({});
 
     // Refs to avoid stale closures in useCallback
     const documentsLoadedRef = useRef(false);
@@ -47,6 +53,7 @@ export function DataProvider({ children }) {
             setFolders([]);
             setFoldersLoaded(false);
             foldersLoadedRef.current = false;
+            setFolderAccessSessions({});
             cachedUserId.current = null;
             return;
         }
@@ -59,8 +66,76 @@ export function DataProvider({ children }) {
             setFolders([]);
             setFoldersLoaded(false);
             foldersLoadedRef.current = false;
+            setFolderAccessSessions({});
         }
     }, [currentUser]);
+
+    // Periodically clean up expired folder access sessions (every 60 seconds)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setFolderAccessSessions(prev => {
+                const now = Date.now();
+                const updated = {};
+                let changed = false;
+                for (const [folderId, grantedAt] of Object.entries(prev)) {
+                    if (now - grantedAt < FOLDER_ACCESS_DURATION) {
+                        updated[folderId] = grantedAt;
+                    } else {
+                        changed = true;
+                    }
+                }
+                return changed ? updated : prev;
+            });
+        }, 60000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    // --- Folder Access Session Helpers ---
+
+    /**
+     * Grant temporary access to a protected folder (15 minutes)
+     */
+    const grantFolderAccess = useCallback((folderId) => {
+        setFolderAccessSessions(prev => ({
+            ...prev,
+            [folderId]: Date.now()
+        }));
+    }, []);
+
+    /**
+     * Check if a folder currently has an active access session
+     * @returns {boolean}
+     */
+    const hasFolderAccess = useCallback((folderId) => {
+        const grantedAt = folderAccessSessions[folderId];
+        if (!grantedAt) return false;
+        return (Date.now() - grantedAt) < FOLDER_ACCESS_DURATION;
+    }, [folderAccessSessions]);
+
+    /**
+     * Revoke access to a specific folder
+     */
+    const revokeFolderAccess = useCallback((folderId) => {
+        setFolderAccessSessions(prev => {
+            const updated = { ...prev };
+            delete updated[folderId];
+            return updated;
+        });
+    }, []);
+
+    /**
+     * Get remaining access time in minutes for a folder
+     * @returns {number|null} Minutes remaining, or null if no access
+     */
+    const getFolderAccessTimeRemaining = useCallback((folderId) => {
+        const grantedAt = folderAccessSessions[folderId];
+        if (!grantedAt) return null;
+        const elapsed = Date.now() - grantedAt;
+        const remaining = FOLDER_ACCESS_DURATION - elapsed;
+        if (remaining <= 0) return null;
+        return Math.ceil(remaining / 60000);
+    }, [folderAccessSessions]);
 
     // Fetch documents (only if not already cached)
     const loadDocuments = useCallback(async (forceRefresh = false) => {
@@ -135,6 +210,10 @@ export function DataProvider({ children }) {
         setDocuments(prev => prev.filter(d => d.id !== docId));
     }, []);
 
+    const updateDocumentInCache = useCallback((docId, updates) => {
+        setDocuments(prev => prev.map(d => d.id === docId ? { ...d, ...updates } : d));
+    }, []);
+
     const addFolderToCache = useCallback((folder) => {
         setFolders(prev => [folder, ...prev]);
         setFoldersLoaded(true);
@@ -147,7 +226,9 @@ export function DataProvider({ children }) {
 
     const removeFolderFromCache = useCallback((folderId) => {
         setFolders(prev => prev.filter(f => f.id !== folderId));
-    }, []);
+        // Also revoke any access session for the deleted folder
+        revokeFolderAccess(folderId);
+    }, [revokeFolderAccess]);
 
     const unfileDocumentsInCache = useCallback((folderId) => {
         setDocuments(prev => prev.map(d => d.folderId === folderId ? { ...d, folderId: null } : d));
@@ -169,6 +250,7 @@ export function DataProvider({ children }) {
         loadDocuments,
         addDocumentToCache,
         removeDocumentFromCache,
+        updateDocumentInCache,
 
         // Folders
         folders,
@@ -179,6 +261,12 @@ export function DataProvider({ children }) {
         updateFolderInCache,
         removeFolderFromCache,
         unfileDocumentsInCache,
+
+        // Folder Access Sessions (password protection)
+        grantFolderAccess,
+        hasFolderAccess,
+        revokeFolderAccess,
+        getFolderAccessTimeRemaining,
 
         // General
         refreshAll

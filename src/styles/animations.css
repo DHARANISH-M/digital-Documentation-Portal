@@ -1,0 +1,689 @@
+/* ====================================
+   Cursor Effects & Micro-Animations
+   ==================================== */
+
+/* ---- Custom Cursor ---- */
+
+/* Glow orb — soft gradient that trails the mouse */
+.cursor-glow {
+    position: fixed;
+    top: -100px;
+    left: -100px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle,
+            rgba(59, 130, 246, 0.35) 0%,
+            rgba(139, 92, 246, 0.15) 50%,
+            transparent 70%);
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.3s ease;
+    opacity: 0;
+    mix-blend-mode: normal;
+    will-change: left, top, width, height;
+}
+
+.cursor-glow.cursor-hover {
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle,
+            rgba(139, 92, 246, 0.3) 0%,
+            rgba(59, 130, 246, 0.1) 50%,
+            transparent 70%);
+}
+
+.cursor-glow.cursor-click {
+    width: 28px;
+    height: 28px;
+    background: radial-gradient(circle,
+            rgba(139, 92, 246, 0.5) 0%,
+            rgba(59, 130, 246, 0.2) 50%,
+            transparent 70%);
+}
+
+/* Cursor dot — precise center */
+.cursor-dot {
+    position: fixed;
+    top: -100px;
+    left: -100px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    background: var(--primary-600);
+    opacity: 0;
+    transition: width 0.2s ease, height 0.2s ease, opacity 0.3s ease, background 0.2s ease;
+    will-change: left, top;
+}
+
+.cursor-dot.cursor-dot-hover {
+    width: 10px;
+    height: 10px;
+    background: var(--accent-purple);
+}
+
+.cursor-dot.cursor-dot-click {
+    width: 4px;
+    height: 4px;
+    background: white;
+}
+
+/* Hide default cursor on desktop */
+@media (hover: hover) and (pointer: fine) {
+    * {
+        cursor: none !important;
+    }
+}
+
+/* ---- Page Transition Animations ---- */
+
+.fade-in {
+    animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---- Card Hover Animations ---- */
+
+.card-hover {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.12),
+        0 4px 10px -4px rgba(0, 0, 0, 0.08);
+}
+
+.card-hover:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* ---- Stagger Animation for Grids ---- */
+
+.folders-grid>*,
+.documents-grid>*,
+.search-results-grid>*,
+.stats-grid>*,
+.activity-list>* {
+    animation: staggerFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.folders-grid>*:nth-child(1),
+.documents-grid>*:nth-child(1),
+.search-results-grid>*:nth-child(1),
+.stats-grid>*:nth-child(1),
+.activity-list>*:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.folders-grid>*:nth-child(2),
+.documents-grid>*:nth-child(2),
+.search-results-grid>*:nth-child(2),
+.stats-grid>*:nth-child(2),
+.activity-list>*:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.folders-grid>*:nth-child(3),
+.documents-grid>*:nth-child(3),
+.search-results-grid>*:nth-child(3),
+.stats-grid>*:nth-child(3),
+.activity-list>*:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.folders-grid>*:nth-child(4),
+.documents-grid>*:nth-child(4),
+.search-results-grid>*:nth-child(4),
+.activity-list>*:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.folders-grid>*:nth-child(5),
+.documents-grid>*:nth-child(5),
+.search-results-grid>*:nth-child(5),
+.activity-list>*:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.folders-grid>*:nth-child(n+6),
+.documents-grid>*:nth-child(n+6),
+.search-results-grid>*:nth-child(n+6) {
+    animation-delay: 0.3s;
+}
+
+@keyframes staggerFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ---- Button Micro-Animations ---- */
+
+.btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.5s ease, height 0.5s ease, opacity 0.5s ease;
+    opacity: 0;
+}
+
+.btn:active::after {
+    width: 300px;
+    height: 300px;
+    opacity: 1;
+    transition: width 0s, height 0s, opacity 0s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px -4px rgba(59, 130, 246, 0.45);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px -2px rgba(59, 130, 246, 0.3);
+}
+
+/* ---- Icon Button Hover Effects ---- */
+
+.btn-icon {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-icon:hover {
+    transform: scale(1.12);
+    background: var(--gray-100);
+}
+
+.btn-icon:active {
+    transform: scale(0.95);
+}
+
+.btn-icon svg {
+    transition: transform 0.2s ease;
+}
+
+.btn-icon:hover svg {
+    transform: scale(1.05);
+}
+
+.btn-icon-danger:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+}
+
+.btn-icon-danger:hover svg {
+    animation: iconShake 0.4s ease;
+}
+
+@keyframes iconShake {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-8deg);
+    }
+
+    75% {
+        transform: rotate(8deg);
+    }
+}
+
+/* ---- Sidebar Navigation Animations ---- */
+
+.nav-item {
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: linear-gradient(180deg, var(--accent-purple), var(--accent-blue));
+    border-radius: var(--radius-full);
+    transition: height 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-item:hover::before {
+    height: 60%;
+}
+
+.nav-item-active::before {
+    height: 70%;
+}
+
+.nav-item:hover .nav-icon {
+    transform: scale(1.1);
+}
+
+.nav-icon {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-item-active .nav-icon {
+    animation: iconPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes iconPop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.25);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ---- Stat Card Hover Animations ---- */
+
+.stat-card {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.stat-icon {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stat-value {
+    transition: color 0.3s ease;
+}
+
+/* ---- Activity Item Animations ---- */
+
+.activity-item {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.activity-item:hover {
+    transform: translateX(4px);
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+}
+
+.activity-item:hover .activity-icon {
+    transform: scale(1.1);
+}
+
+.activity-icon {
+    transition: transform 0.2s ease;
+}
+
+/* ---- Input Focus Animations ---- */
+
+.form-input,
+.search-input,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea,
+select {
+    transition: border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.2s ease;
+}
+
+.form-input:focus,
+.search-input:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+textarea:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px -4px rgba(59, 130, 246, 0.2),
+        0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ---- Logo Animation ---- */
+
+.logo-icon {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sidebar-logo:hover .logo-icon {
+    transform: rotate(-8deg) scale(1.1);
+}
+
+.sidebar-logo:hover .logo-text {
+    background: linear-gradient(90deg, var(--primary-600), var(--accent-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.logo-text {
+    transition: all 0.3s ease;
+}
+
+/* ---- User Avatar Pulse ---- */
+
+.user-avatar {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.user-menu-trigger:hover .user-avatar {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* ---- Dropdown Animation ---- */
+
+.user-dropdown {
+    animation: dropdownReveal 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes dropdownReveal {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.dropdown-item {
+    transition: all 0.15s ease;
+}
+
+.dropdown-item:hover {
+    transform: translateX(4px);
+}
+
+/* ---- Badge Pulse on Protected Folders ---- */
+
+.folder-protected-badge {
+    animation: badgePulse 2.5s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* ---- Floating Label Effect for Empty States ---- */
+
+.folders-empty svg,
+.documents-empty svg,
+.search-empty svg {
+    animation: floatBounce 3s ease-in-out infinite;
+}
+
+@keyframes floatBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* ---- Spinner Enhancement ---- */
+
+.spinner {
+    animation: spin 0.7s linear infinite;
+    border-color: rgba(59, 130, 246, 0.15);
+    border-top-color: var(--primary-600);
+}
+
+/* ---- Page Header Gradient Underline ---- */
+
+.page-title {
+    position: relative;
+    display: inline-block;
+}
+
+.page-title::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue), var(--accent-green));
+    border-radius: var(--radius-full);
+    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-title:hover::after {
+    width: 100%;
+}
+
+/* ---- Dashboard Title Wave Emoji ---- */
+
+.wave {
+    display: inline-block;
+    animation: wave 2s ease-in-out infinite;
+    transform-origin: 70% 70%;
+}
+
+@keyframes wave {
+
+    0%,
+    60%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    10% {
+        transform: rotate(14deg);
+    }
+
+    20% {
+        transform: rotate(-8deg);
+    }
+
+    30% {
+        transform: rotate(14deg);
+    }
+
+    40% {
+        transform: rotate(-4deg);
+    }
+
+    50% {
+        transform: rotate(10deg);
+    }
+}
+
+/* ---- Breadcrumb Separator Animation ---- */
+
+.breadcrumb-sep {
+    animation: breadcrumbFade 0.4s ease both;
+}
+
+.breadcrumb-link {
+    transition: all 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+    transform: translateY(-1px);
+    color: var(--accent-purple);
+}
+
+/* ---- Category Filter Button Animations ---- */
+
+.category-btn {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.category-btn:hover {
+    transform: translateY(-2px);
+}
+
+.category-btn-active {
+    animation: categorySelect 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes categorySelect {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ---- Smooth Scrollbar ---- */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: var(--radius-full);
+    transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-400);
+}
+
+/* ---- Storage Progress Bar Animation ---- */
+
+.storage-progress {
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: progressShine 2s ease infinite;
+    background-size: 200% 100%;
+}
+
+@keyframes progressShine {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* ---- Quick Actions Card Hover ---- */
+
+.quick-actions-card {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.quick-actions-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* ---- Tooltip / Title Attribute Enhancement ---- */
+
+[title] {
+    position: relative;
+}
+
+/* ---- Disable cursor effects on mobile ---- */
+
+@media (max-width: 768px) {
+
+    .cursor-glow,
+    .cursor-dot {
+        display: none !important;
+    }
+
+    * {
+        cursor: auto !important;
+    }
+}
+
+/* ---- Reduce Motion Preference ---- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .cursor-glow,
+    .cursor-dot {
+        display: none !important;
+    }
+}

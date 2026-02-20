@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
@@ -8,13 +8,13 @@ import './Dashboard.css';
 
 function Dashboard() {
     const { currentUser } = useAuth();
-    const { documents, documentsLoading, loadDocuments } = useData();
+    const { documents, documentsLoading, loadDocuments, folders, loadFolders } = useData();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function init() {
             if (currentUser) {
-                await loadDocuments();
+                await Promise.all([loadDocuments(), loadFolders()]);
                 // Auto-sync user to Firestore for Admin panel (non-blocking)
                 try { saveUser(currentUser); } catch (e) { /* silent */ }
             }
@@ -23,12 +23,20 @@ function Dashboard() {
         init();
     }, [currentUser]);
 
-    // Compute stats from cached documents
+    // Get IDs of all protected folders (to hide their documents from dashboard)
+    const protectedFolderIds = useMemo(() => {
+        return new Set(folders.filter(f => f.isProtected).map(f => f.id));
+    }, [folders]);
+
+    // Compute stats from cached documents (exclude protected-folder documents)
     const stats = useMemo(() => {
+        // Filter out documents in protected folders
+        const visibleDocs = documents.filter(doc => !doc.folderId || !protectedFolderIds.has(doc.folderId));
+
         const now = new Date();
         const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-        const recentUploads = documents.filter(doc => {
+        const recentUploads = visibleDocs.filter(doc => {
             if (doc.createdAt?.toDate) {
                 return doc.createdAt.toDate() > oneWeekAgo;
             }
@@ -38,12 +46,12 @@ function Dashboard() {
         const totalSize = documents.reduce((acc, doc) => acc + (doc.fileSize || 0), 0);
 
         return {
-            totalDocuments: documents.length,
+            totalDocuments: visibleDocs.length,
             recentUploads: recentUploads.length,
             storageUsed: totalSize,
-            recentActivity: documents.slice(0, 5)
+            recentActivity: visibleDocs.slice(0, 5)
         };
-    }, [documents]);
+    }, [documents, protectedFolderIds]);
 
     const isLoading = loading || documentsLoading;
 

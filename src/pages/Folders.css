@@ -57,6 +57,16 @@
     border-color: var(--primary-200);
 }
 
+/* Protected folder card accent */
+.folder-card-protected {
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+.folder-card-protected:hover {
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: var(--shadow-md), 0 0 0 1px rgba(139, 92, 246, 0.1);
+}
+
 .folder-card-header {
     display: flex;
     align-items: flex-start;
@@ -73,12 +83,22 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    position: relative;
 }
 
 .folder-icon svg {
     width: 24px;
     height: 24px;
     color: #D97706;
+}
+
+/* Protected folder icon — purple gradient instead of yellow */
+.folder-icon-protected {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.15));
+}
+
+.folder-icon-protected>svg {
+    color: var(--accent-purple);
 }
 
 .folder-info {
@@ -100,6 +120,13 @@
 
 .folder-name:hover {
     color: var(--primary-600);
+}
+
+.folder-meta-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
 }
 
 .folder-meta {
@@ -128,6 +155,11 @@
     gap: var(--spacing-2);
     border-top: 1px solid var(--gray-100);
     padding-top: var(--spacing-3);
+}
+
+.btn-icon-danger:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--error);
 }
 
 /* Loading State */
@@ -167,6 +199,65 @@
     margin-bottom: var(--spacing-5);
 }
 
+/* Modal Base Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(17, 24, 39, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--spacing-4);
+}
+
+.modal {
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 440px;
+    padding: var(--spacing-8);
+    animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-4);
+}
+
+.modal-text {
+    font-size: var(--font-size-sm);
+    color: var(--gray-600);
+    margin-bottom: var(--spacing-6);
+    line-height: 1.6;
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--spacing-3);
+    justify-content: flex-end;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .folders-grid {
@@ -175,5 +266,15 @@
 
     .page-header-row {
         flex-direction: column;
+    }
+
+    .modal {
+        max-width: 100%;
+        padding: var(--spacing-6);
+    }
+
+    .folder-meta-row {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }

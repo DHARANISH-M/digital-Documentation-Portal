@@ -11,6 +11,12 @@
     display: flex;
     flex-direction: column;
     z-index: 100;
+    overflow-y: auto;
+}
+
+/* Close button — hidden on desktop */
+.sidebar-close {
+    display: none;
 }
 
 .sidebar-logo {
@@ -31,6 +37,7 @@
     align-items: center;
     justify-content: center;
     padding: 8px;
+    flex-shrink: 0;
 }
 
 .logo-icon svg {
@@ -60,6 +67,7 @@
     font-weight: 500;
     border-radius: var(--radius-md);
     transition: all var(--transition-base);
+    text-decoration: none;
 }
 
 .nav-item:hover {
@@ -82,6 +90,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .nav-icon svg {
@@ -93,9 +102,60 @@
     font-size: var(--font-size-sm);
 }
 
-/* Responsive */
+/* ========= Mobile Responsive ========= */
 @media (max-width: 768px) {
     .sidebar {
-        display: none;
+        /* Off-screen by default */
+        transform: translateX(-100%);
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        width: 280px;
+        z-index: 150;
+        box-shadow: none;
+    }
+
+    /* When open — slide in */
+    .sidebar.sidebar-mobile-open {
+        transform: translateX(0);
+        box-shadow: 8px 0 30px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Close button — visible on mobile */
+    .sidebar-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: var(--spacing-4);
+        right: var(--spacing-4);
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-md);
+        background: transparent;
+        border: none;
+        color: var(--gray-500);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        z-index: 10;
+    }
+
+    .sidebar-close:hover {
+        background: var(--gray-100);
+        color: var(--gray-800);
+    }
+
+    .sidebar-close svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Larger tap targets on mobile */
+    .nav-item {
+        padding: var(--spacing-4) var(--spacing-4);
+        font-size: var(--font-size-base);
+    }
+
+    .nav-icon {
+        width: 22px;
+        height: 22px;
     }
 }

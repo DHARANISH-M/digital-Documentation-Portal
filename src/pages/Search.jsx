@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { deleteFile } from '../services/storage';
-import { deleteDocument } from '../services/documents';
+import { deleteDocument, renameDocument } from '../services/documents';
 import DocumentCard from '../components/DocumentCard';
 import './Search.css';
 
@@ -14,19 +14,26 @@ function Search() {
     const [deleting, setDeleting] = useState(false);
 
     const { currentUser } = useAuth();
-    const { documents, documentsLoading, loadDocuments, removeDocumentFromCache } = useData();
+    const { documents, documentsLoading, loadDocuments, removeDocumentFromCache, updateDocumentInCache, folders, loadFolders } = useData();
 
     const categories = ['All', 'Financial', 'Legal', 'HR', 'Marketing', 'Operations', 'Other'];
 
     useEffect(() => {
         if (currentUser) {
             loadDocuments();
+            loadFolders();
         }
     }, [currentUser]);
 
+    // Get IDs of all protected folders (to hide their documents from search)
+    const protectedFolderIds = useMemo(() => {
+        return new Set(folders.filter(f => f.isProtected).map(f => f.id));
+    }, [folders]);
+
     // Filter documents client-side from cache
     const filteredDocuments = useMemo(() => {
-        let results = documents;
+        // First, exclude documents in protected folders
+        let results = documents.filter(doc => !doc.folderId || !protectedFolderIds.has(doc.folderId));
 
         // Filter by category
         if (selectedCategory && selectedCategory !== 'All') {
@@ -43,7 +50,7 @@ function Search() {
         }
 
         return results;
-    }, [documents, selectedCategory, searchQuery]);
+    }, [documents, selectedCategory, searchQuery, protectedFolderIds]);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -105,6 +112,11 @@ function Search() {
         }
     };
 
+    const handleRename = async (document, newName) => {
+        await renameDocument(document.id, newName);
+        updateDocumentInCache(document.id, { name: newName });
+    };
+
     return (
         <div className="search-page fade-in">
             <div className="page-header">
@@ -163,6 +175,7 @@ function Search() {
                             onDownload={handleDownload}
                             onShare={handleShare}
                             onDelete={handleDeleteClick}
+                            onRename={handleRename}
                         />
                     ))}
                 </div>

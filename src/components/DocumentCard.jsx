@@ -1,7 +1,20 @@
+import { useState, useRef, useEffect } from 'react';
 import { formatFileSize, getFileType } from '../services/storage';
 import './DocumentCard.css';
 
-function DocumentCard({ document, onView, onDownload, onShare, onDelete }) {
+function DocumentCard({ document, onView, onDownload, onShare, onDelete, onRename }) {
+    const [isRenaming, setIsRenaming] = useState(false);
+    const [renameValue, setRenameValue] = useState('');
+    const [renaming, setRenaming] = useState(false);
+    const renameInputRef = useRef(null);
+
+    useEffect(() => {
+        if (isRenaming && renameInputRef.current) {
+            renameInputRef.current.focus();
+            renameInputRef.current.select();
+        }
+    }, [isRenaming]);
+
     const getCategoryClass = (category) => {
         const categoryMap = {
             'Financial': 'badge-financial',
@@ -36,6 +49,42 @@ function DocumentCard({ document, onView, onDownload, onShare, onDelete }) {
         });
     };
 
+    const handleStartRename = () => {
+        setRenameValue(document.name);
+        setIsRenaming(true);
+    };
+
+    const handleCancelRename = () => {
+        setIsRenaming(false);
+        setRenameValue('');
+    };
+
+    const handleConfirmRename = async () => {
+        const trimmed = renameValue.trim();
+        if (!trimmed || trimmed === document.name) {
+            handleCancelRename();
+            return;
+        }
+        setRenaming(true);
+        try {
+            await onRename?.(document, trimmed);
+            setIsRenaming(false);
+        } catch (err) {
+            console.error('Rename error:', err);
+        } finally {
+            setRenaming(false);
+        }
+    };
+
+    const handleRenameKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleConfirmRename();
+        } else if (e.key === 'Escape') {
+            handleCancelRename();
+        }
+    };
+
     const fileType = getFileType(document.fileName || document.name || '');
 
     return (
@@ -55,7 +104,25 @@ function DocumentCard({ document, onView, onDownload, onShare, onDelete }) {
                     </svg>
                 </div>
                 <div className="document-info">
-                    <h3 className="document-name">{document.name}</h3>
+                    {isRenaming ? (
+                        <div className="document-rename-row">
+                            <input
+                                ref={renameInputRef}
+                                type="text"
+                                className="document-rename-input"
+                                value={renameValue}
+                                onChange={(e) => setRenameValue(e.target.value)}
+                                onKeyDown={handleRenameKeyDown}
+                                onBlur={handleConfirmRename}
+                                disabled={renaming}
+                                maxLength={100}
+                            />
+                        </div>
+                    ) : (
+                        <h3 className="document-name" onDoubleClick={handleStartRename} title="Double-click to rename">
+                            {document.name}
+                        </h3>
+                    )}
                     <span className="document-type">{fileType}</span>
                 </div>
             </div>
@@ -87,6 +154,17 @@ function DocumentCard({ document, onView, onDownload, onShare, onDelete }) {
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                         <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </button>
+                {/* Rename Button */}
+                <button
+                    className="btn-icon"
+                    onClick={handleStartRename}
+                    title="Rename"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                     </svg>
                 </button>
                 <button

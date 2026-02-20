@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { isAdmin } from '../services/admin';
 import './Sidebar.css';
 
-function Sidebar() {
+function Sidebar({ mobileOpen, onClose }) {
     const { currentUser } = useAuth();
     const userIsAdmin = isAdmin(currentUser?.email);
 
@@ -91,7 +91,15 @@ function Sidebar() {
     };
 
     return (
-        <aside className="sidebar">
+        <aside className={`sidebar ${mobileOpen ? 'sidebar-mobile-open' : ''}`}>
+            {/* Close button for mobile */}
+            <button className="sidebar-close" onClick={onClose} aria-label="Close menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+
             <div className="sidebar-logo">
                 <div className="logo-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -112,6 +120,7 @@ function Sidebar() {
                         className={({ isActive }) =>
                             `nav-item ${isActive ? 'nav-item-active' : ''}`
                         }
+                        onClick={onClose}
                     >
                         <span className="nav-icon">{getIcon(item.icon)}</span>
                         <span className="nav-label">{item.label}</span>
