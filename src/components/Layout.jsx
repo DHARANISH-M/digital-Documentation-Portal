@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import CursorEffect from './CursorEffect';
 import './Layout.css';
 
 function Layout() {
@@ -13,7 +12,6 @@ function Layout() {
 
     return (
         <div className="app-layout">
-            <CursorEffect />
             <Sidebar mobileOpen={mobileMenuOpen} onClose={closeMobileMenu} />
             <Header onMenuToggle={toggleMobileMenu} mobileMenuOpen={mobileMenuOpen} />
             {/* Overlay behind sidebar on mobile */}

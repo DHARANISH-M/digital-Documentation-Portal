@@ -15,10 +15,8 @@ export function ThemeProvider({ children }) {
         // Check localStorage first
         const saved = localStorage.getItem('docportal-theme');
         if (saved === 'dark' || saved === 'light') return saved;
-        // Fall back to system preference
-        if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
-            return 'dark';
-        }
+        
+        // Default to light mode
         return 'light';
     });
 
@@ -35,19 +33,7 @@ export function ThemeProvider({ children }) {
         }
     }, [theme]);
 
-    // Listen to system preference changes
-    useEffect(() => {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        const handleChange = (e) => {
-            // Only auto-follow system if user hasn't manually chosen
-            const saved = localStorage.getItem('docportal-theme');
-            if (!saved) {
-                setTheme(e.matches ? 'dark' : 'light');
-            }
-        };
-        mediaQuery.addEventListener('change', handleChange);
-        return () => mediaQuery.removeEventListener('change', handleChange);
-    }, []);
+
 
     const toggleTheme = () => {
         setTheme(prev => prev === 'light' ? 'dark' : 'light');

@@ -362,24 +362,7 @@ html *::after {
     background: #4a4e69;
 }
 
-/* ---- Cursor Glow Adjust for Dark ---- */
-[data-theme="dark"] .cursor-glow {
-    background: radial-gradient(circle,
-            rgba(96, 165, 250, 0.25) 0%,
-            rgba(167, 139, 250, 0.12) 50%,
-            transparent 70%);
-}
 
-[data-theme="dark"] .cursor-glow.cursor-hover {
-    background: radial-gradient(circle,
-            rgba(167, 139, 250, 0.25) 0%,
-            rgba(96, 165, 250, 0.1) 50%,
-            transparent 70%);
-}
-
-[data-theme="dark"] .cursor-dot {
-    background: var(--accent-blue);
-}
 
 /* ---- Profile / Help / Admin Pages ---- */
 [data-theme="dark"] .profile-section,

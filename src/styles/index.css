@@ -105,6 +105,19 @@
   padding: 0;
 }
 
+html, body {
+  cursor: default !important;
+}
+
+button, a, .btn, [role="button"] {
+  cursor: pointer !important;
+}
+
+input, textarea {
+  cursor: text !important;
+}
+
+
 html {
   font-size: 16px;
   scroll-behavior: smooth;
