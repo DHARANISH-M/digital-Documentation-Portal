@@ -7,20 +7,20 @@ function Sidebar({ mobileOpen, onClose }) {
     const { currentUser } = useAuth();
     const userIsAdmin = isAdmin(currentUser?.email);
 
-    const menuItems = [
-        { path: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-        ...(userIsAdmin ? [] : [{ path: '/upload', icon: 'upload', label: 'Upload Document' }]),
-        { path: '/documents', icon: 'documents', label: 'View Documents' },
-        { path: '/folders', icon: 'folders', label: 'Folders' },
-        { path: '/search', icon: 'search', label: 'Search & Filter' },
-        { path: '/help', icon: 'help', label: 'Help & Support' },
-        { path: '/profile', icon: 'profile', label: 'Profile' }
-    ];
-
-    // Add admin link if user is admin
-    if (userIsAdmin) {
-        menuItems.splice(5, 0, { path: '/admin', icon: 'admin', label: 'Admin Panel' });
-    }
+    const menuItems = userIsAdmin 
+        ? [
+            { path: '/admin', icon: 'admin', label: 'Admin Panel' },
+            { path: '/profile', icon: 'profile', label: 'Profile' }
+        ]
+        : [
+            { path: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
+            { path: '/upload', icon: 'upload', label: 'Upload Document' },
+            { path: '/documents', icon: 'documents', label: 'View Documents' },
+            { path: '/folders', icon: 'folders', label: 'Folders' },
+            { path: '/search', icon: 'search', label: 'Search & Filter' },
+            { path: '/help', icon: 'help', label: 'Help & Support' },
+            { path: '/profile', icon: 'profile', label: 'Profile' }
+        ];
 
     const getIcon = (iconName) => {
         switch (iconName) {

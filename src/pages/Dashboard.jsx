@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { formatFileSize } from '../services/storage';
@@ -58,6 +58,10 @@ function Dashboard() {
     const getUserName = () => {
         return currentUser?.displayName?.split(' ')[0] || 'User';
     };
+
+    if (isAdmin(currentUser?.email)) {
+        return <Navigate to="/admin" replace />;
+    }
 
     const formatDate = (timestamp) => {
         if (!timestamp) return '';
