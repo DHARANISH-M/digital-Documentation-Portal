@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { formatFileSize } from '../services/storage';
-import { saveUser } from '../services/admin';
+import { saveUser, isAdmin } from '../services/admin';
 import './Dashboard.css';
 
 function Dashboard() {
@@ -142,13 +142,15 @@ function Dashboard() {
                     </p>
                 </div>
                 <div className="quick-actions-buttons">
-                    <Link to="/upload" className="btn btn-primary">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <line x1="12" y1="5" x2="12" y2="19" />
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        Upload Document
-                    </Link>
+                    {!isAdmin(currentUser?.email) && (
+                        <Link to="/upload" className="btn btn-primary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <line x1="12" y1="5" x2="12" y2="19" />
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
+                            Upload Document
+                        </Link>
+                    )}
                     <Link to="/documents" className="btn btn-secondary">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -192,9 +194,11 @@ function Dashboard() {
                             <polyline points="14 2 14 8 20 8" />
                         </svg>
                         <p>No documents yet</p>
-                        <Link to="/upload" className="btn btn-primary">
-                            Upload your first document
-                        </Link>
+                        {!isAdmin(currentUser?.email) && (
+                            <Link to="/upload" className="btn btn-primary">
+                                Upload your first document
+                            </Link>
+                        )}
                     </div>
                 )}
             </div>

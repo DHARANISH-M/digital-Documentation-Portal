@@ -9,7 +9,8 @@ import {
     where,
     orderBy,
     serverTimestamp,
-    setDoc
+    setDoc,
+    deleteDoc
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
@@ -66,6 +67,18 @@ export async function getAllUsers() {
     });
 
     return users;
+}
+
+// Update user status
+export async function updateUserStatus(userId, statusData) {
+    const userRef = doc(db, USERS_COLLECTION, userId);
+    await updateDoc(userRef, statusData);
+}
+
+// Delete user record
+export async function deleteUserRecord(userId) {
+    const userRef = doc(db, USERS_COLLECTION, userId);
+    await deleteDoc(userRef);
 }
 
 // Help Tickets collection

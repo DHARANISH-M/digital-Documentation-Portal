@@ -9,7 +9,7 @@ function Sidebar({ mobileOpen, onClose }) {
 
     const menuItems = [
         { path: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
-        { path: '/upload', icon: 'upload', label: 'Upload Document' },
+        ...(userIsAdmin ? [] : [{ path: '/upload', icon: 'upload', label: 'Upload Document' }]),
         { path: '/documents', icon: 'documents', label: 'View Documents' },
         { path: '/folders', icon: 'folders', label: 'Folders' },
         { path: '/search', icon: 'search', label: 'Search & Filter' },

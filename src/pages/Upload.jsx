@@ -5,6 +5,7 @@ import { useData } from '../context/DataContext';
 import { createDocument } from '../services/documents';
 import { uploadFile, formatFileSize } from '../services/storage';
 import { createFolder } from '../services/folders';
+import { isAdmin } from '../services/admin';
 import './Upload.css';
 
 function Upload() {
@@ -161,6 +162,21 @@ function Upload() {
     const handleCancel = () => {
         navigate(-1);
     };
+
+    if (isAdmin(currentUser?.email)) {
+        return (
+            <div className="upload-page fade-in">
+                <div className="card" style={{ padding: '2rem', textAlign: 'center' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" style={{ width: '48px', height: '48px', margin: '0 auto 1rem' }}>
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                    </svg>
+                    <h2 style={{ marginBottom: '0.5rem' }}>Access Denied</h2>
+                    <p style={{ color: '#64748b' }}>Admins do not have permission to upload documents. Please use the Admin panel for management tasks.</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="upload-page fade-in">
