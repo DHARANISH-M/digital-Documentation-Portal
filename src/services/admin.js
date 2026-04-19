@@ -99,8 +99,7 @@ export async function createHelpTicket(ticketData) {
 export async function getUserTickets(userId) {
     const q = query(
         collection(db, TICKETS_COLLECTION),
-        where('userId', '==', userId),
-        orderBy('createdAt', 'desc')
+        where('userId', '==', userId)
     );
 
     const querySnapshot = await getDocs(q);
@@ -108,6 +107,13 @@ export async function getUserTickets(userId) {
 
     querySnapshot.forEach((doc) => {
         tickets.push({ id: doc.id, ...doc.data() });
+    });
+
+    // Sort by createdAt descending
+    tickets.sort((a, b) => {
+        const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+        const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+        return timeB - timeA;
     });
 
     return tickets;
